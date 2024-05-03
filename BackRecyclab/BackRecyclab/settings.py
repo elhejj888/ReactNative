@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'Materials',
     'authentication',
     'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -88,14 +90,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
-    'mongodb': {
-        'ENGINE': 'djongo',
-        'NAME': 'recyclab_mongodb',
-        'CLIENT': {
-            'host': 'localhost',
-            'port': 27017,
-        },
-    }
+    
 }
 
 

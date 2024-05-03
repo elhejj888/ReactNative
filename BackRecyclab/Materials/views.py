@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
-
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from Materials.models import Material, Transaction, Confirmation
 from django.db import transaction
 
@@ -8,18 +9,31 @@ from django.db import transaction
 def index(request):
     return render(request, 'index.html')
 
+@api_view(['POST'])
 def addMaterial(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        etat = request.POST.get('etat')
-        unitPrice =float(request.POST.get('unitPrice'))
-        quantity = int(request.POST.get('quantity'))
-        material = Material.objects.create(name=name, description=description, etat=etat, unitPrice=unitPrice)
-        material.save()
-        return JsonResponse({'success': True, 'material_id': material.id})
+        data = request.data  # Use request.data to access JSON data
+        name = data.get('name')
+        description = data.get('description')
+        etat = data.get('etat')
+        unitPrice = data.get('unitPrice')
+        quantity = data.get('quantity')
+        
+        try:
+            material = Material.objects.create(
+                name=name,
+                description=description,
+                etat=etat,
+                unitPrice=unitPrice,
+                quantity=quantity
+            )
+            print("Material created:", material)  # Print the created material
+            return JsonResponse({'success': True, 'material_id': material.id})
+        except Exception as e:
+            print("Error:", str(e))
+            return JsonResponse({'success': False, 'errors': 'An error occurred while creating the material'}, status=400)
     else:
-        return JsonResponse({'success': False, 'errors': 'errors occured'}, status=400)
+        return JsonResponse({'success': False, 'errors': 'Invalid request method'}, status=405)
 
 def updateMaterial(request, material_id):
     material = get_object_or_404(Material, id=material_id)
